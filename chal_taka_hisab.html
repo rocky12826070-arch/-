@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#14532d">
+<title>চাল ও টাকা হিসাব</title>
+<style>
+:root{--green:#166534;--green2:#14532d;--bg:#f3f7f4;--line:#dce7df;--muted:#64748b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#17251c;font-family:system-ui,-apple-system,"Noto Sans Bengali","Hind Siliguri",sans-serif}
+header{background:linear-gradient(135deg,#14532d,#21834b);color:white;padding:24px 16px 28px}
+.wrap{max-width:1000px;margin:auto;padding:0 14px}
+h1{font-size:25px;margin:0 0 6px}header p{margin:0;color:#e2f5e8;font-size:14px}
+main{padding:18px 0 40px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:-2px;margin-bottom:16px}
+.stat,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:15px;box-shadow:0 2px 8px #173b2410}
+.stat small{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;font-size:22px;margin-top:5px;color:var(--green2)}
+.panel{margin-bottom:14px}.panel h2{font-size:17px;margin:0 0 13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:650;margin-bottom:6px}
+input{width:100%;border:1px solid #cbd8ce;border-radius:10px;padding:11px 12px;font:inherit;font-size:15px;background:white;color:#17251c;min-width:0}
+input:focus{outline:2px solid #86c99b;border-color:var(--green)}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 15px;font:inherit;font-weight:650;cursor:pointer}
+.primary{background:var(--green);color:white}.secondary{background:#e8f2eb;color:var(--green2)}.danger{background:#fff0f0;color:#b42318}.tiny{padding:7px 10px;font-size:12px}
+.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.toolbar input{flex:1;min-width:180px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}
+th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #edf1ee;white-space:nowrap}
+th{color:#52645a;background:#f8faf8;font-weight:700}td strong{color:var(--green2)}
+.empty{text-align:center;color:var(--muted);padding:25px}
+.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}
+@media(max-width:560px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}.grid{grid-template-columns:1fr}h1{font-size:22px}.panel{padding:13px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>চাল ও টাকা হিসাব</h1><p>নাম, রুম, টাকা ও চাল পটের হিসাব সংরক্ষণ করুন</p></div></header>
+<main class="wrap">
+<section class="stats">
+ <div class="stat"><small>মোট চাল</small><strong id="totalPots">০ পট</strong></div>
+ <div class="stat"><small>মোট চাল (কেজি)</small><strong id="totalKg">০ কেজি</strong></div>
+ <div class="stat"><small>মোট টাকা</small><strong id="totalMoney">৳ ০</strong></div>
+</section>
+<section class="panel">
+<h2 id="formTitle">নতুন হিসাব যোগ করুন</h2>
+<form id="entryForm">
+ <div class="grid">
+  <div><label for="name">নাম *</label><input id="name" required placeholder="ব্যক্তির নাম"></div>
+  <div><label for="room">রুম নম্বর</label><input id="room" placeholder="যেমন: ১০১"></div>
+  <div><label for="money">টাকা (৳)</label><input id="money" type="number" min="0" step="0.01" placeholder="যেমন: ৫০০"></div>
+  <div><label for="pots">চালের পরিমাণ (পট) *</label><input id="pots" type="number" min="0" step="0.5" required placeholder="যেমন: ১০ বা ১০.৫"><div class="hint" id="kgHint">০ পট = ০ কেজি</div></div>
+  <div><label for="date">তারিখ</label><input id="date" type="date"></div>
+  <div><label for="time">সময়</label><input id="time" type="time"></div>
+ </div>
+ <div class="actions"><button class="primary" type="submit" id="saveBtn">হিসাব সংরক্ষণ</button><button class="secondary" type="button" id="resetBtn">নতুন এন্ট্রি</button></div>
+</form>
+<p class="note">চালের নির্ধারিত হিসাব: <b>১০ কেজি = ৪০ পট</b>। অর্থাৎ ১ পট = ০.২৫ কেজি (২৫০ গ্রাম)। তাই ১০.৫ পট = ২.৬২৫ কেজি।</p>
+</section>
+<section class="panel">
+<h2>সংরক্ষিত হিসাব</h2>
+<div class="toolbar"><input id="search" placeholder="নাম বা রুম নম্বর দিয়ে খুঁজুন"><button class="secondary" id="exportBtn" type="button">Excel ডাউনলোড</button></div>
+<div class="table-wrap"><table><thead><tr><th>নাম</th><th>রুম</th><th>টাকা</th><th>চাল (পট)</th><th>চাল (কেজি)</th><th>তারিখ ও সময়</th><th>কাজ</th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty">এখনো কোনো হিসাব সংরক্ষণ করা হয়নি।</div></div>
+</section>
+</main>
+<script>
+const KEY='chal_taka_hisab_v1';
+let entries=[];let editing=null;
+const $=id=>document.getElementById(id);
+const bn=n=>Number(n||0).toLocaleString('bn-BD',{maximumFractionDigits:3});
+function load(){try{entries=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){entries=[]}}
+function save(){localStorage.setItem(KEY,JSON.stringify(entries))}
+function kg(p){return Number(p||0)*0.25}
+function nowParts(){const d=new Date();const pad=n=>String(n).padStart(2,'0');return {date:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,time:`${pad(d.getHours())}:${pad(d.getMinutes())}`}}
+function setNow(){const n=nowParts();$('date').value=n.date;$('time').value=n.time}
+function updateHint(){$('kgHint').textContent=`${bn($('pots').value||0)} পট = ${bn(kg($('pots').value))} কেজি`}
+function reset(){editing=null;$('entryForm').reset();setNow();updateHint();$('formTitle').textContent='নতুন হিসাব যোগ করুন';$('saveBtn').textContent='হিসাব সংরক্ষণ'}
+function render(){
+ const total=entries.reduce((a,e)=>a+Number(e.pots||0),0),money=entries.reduce((a,e)=>a+Number(e.money||0),0);
+ $('totalPots').textContent=bn(total)+' পট';$('totalKg').textContent=bn(kg(total))+' কেজি';$('totalMoney').textContent='৳ '+bn(money);
+ const q=$('search').value.trim().toLowerCase();
+ const list=entries.filter(e=>e.name.toLowerCase().includes(q)||String(e.room||'').toLowerCase().includes(q));
+ $('rows').innerHTML=list.map(e=>`<tr><td><strong>${esc(e.name)}</strong></td><td>${esc(e.room||'-')}</td><td>৳ ${bn(e.money)}</td><td>${bn(e.pots)} পট</td><td>${bn(kg(e.pots))} কেজি</td><td>${esc(e.date||'')} ${esc(e.time||'')}</td><td><button class="secondary tiny" onclick="editEntry('${e.id}')">এডিট</button> <button class="danger tiny" onclick="deleteEntry('${e.id}')">ডিলিট</button></td></tr>`).join('');
+ $('empty').style.display=list.length?'none':'block';
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('entryForm').addEventListener('submit',ev=>{ev.preventDefault();const e={id:editing||String(Date.now())+'_'+Math.random().toString(16).slice(2),name:$('name').value.trim(),room:$('room').value.trim(),money:Number($('money').value||0),pots:Number($('pots').value),date:$('date').value,time:$('time').value};if(!e.name||!Number.isFinite(e.pots)||e.pots<0||e.pots*2%1!==0){alert('নাম লিখুন এবং চাল ০.৫ পটের ধাপে লিখুন।');return}if(editing){entries=entries.map(x=>x.id===editing?e:x)}else entries.unshift(e);save();render();reset()});
+$('pots').addEventListener('input',updateHint);$('resetBtn').addEventListener('click',reset);$('search').addEventListener('input',render);
+window.editEntry=id=>{const e=entries.find(x=>x.id===id);if(!e)return;editing=id;$('name').value=e.name;$('room').value=e.room;$('money').value=e.money;$('pots').value=e.pots;$('date').value=e.date;$('time').value=e.time;updateHint();$('formTitle').textContent='হিসাব পরিবর্তন করুন';$('saveBtn').textContent='পরিবর্তন সংরক্ষণ';window.scrollTo({top:0,behavior:'smooth'})};
+window.deleteEntry=id=>{if(confirm('এই হিসাবটি মুছে ফেলবেন?')){entries=entries.filter(x=>x.id!==id);save();render();if(editing===id)reset()}};
+function exportCSV(){const head=['নাম','রুম','টাকা (৳)','চাল (পট)','চাল (কেজি)','তারিখ','সময়'];const data=entries.map(e=>[e.name,e.room,e.money,e.pots,kg(e.pots),e.date,e.time]);const csv='\uFEFF'+[head,...data].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='chal-taka-hisab.csv';a.click();URL.revokeObjectURL(a.href)}
+$('exportBtn').addEventListener('click',async()=>{if(!entries.length){alert('ডাউনলোড করার মতো কোনো হিসাব নেই।');return}
+ if(window.XLSX){const ws=XLSX.utils.aoa_to_sheet([['নাম','রুম','টাকা (৳)','চাল (পট)','চাল (কেজি)','তারিখ','সময়'],...entries.map(e=>[e.name,e.room,e.money,e.pots,kg(e.pots),e.date,e.time])]);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'হিসাব');XLSX.writeFile(wb,'চাল-টাকা-হিসাব.xlsx')}else{exportCSV();alert('Excel ফাইলের বদলে CSV ফাইল ডাউনলোড হয়েছে। এটি Microsoft Excel-এ খোলা যাবে।') }
+});
+load();reset();render();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</body></html>
